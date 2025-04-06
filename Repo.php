@@ -110,5 +110,20 @@ namespace marianojwl\MySqlRepo {
             //$this->conn->close();
             return ["success"=>true, "data"=>$data];
         }
+
+        public function transaction($queries) {
+          $this->beginTransaction();
+          $results = [];
+          try {
+            foreach($queries as $query){
+              $results[] = $this->query($query);
+            }
+            $this->commit();
+          } catch (\Exception $e) {
+            $this->rollback();
+            return ["success"=>false, "data"=>$results, "error"=>$e->getMessage()];
+          }
+          return ["success"=>true, "data"=>$results];
+        }
     }
 }
